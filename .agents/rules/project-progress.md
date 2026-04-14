@@ -16,7 +16,8 @@ Ensure development follows the structured roadmap in `docs/mini-milestones.md` t
 5. **Update Progress**:
     - When starting a task, update the milestone status to 🟨 in `docs/mini-milestones.md`.
     - When a milestone is verified end-to-end (as per the "Expected Output"), update it to ✅.
-    - Always commit the status update to `docs/mini-milestones.md` along with the code changes.
+    - Update `README.md` to reflect the latest "Current Status," "Project Structure," and "Instructions."
+    - Always commit the status update to `docs/mini-milestones.md` and `README.md` along with the code changes.
 
 ## Verification
 - A milestone is only "Complete" (✅) when it works end-to-end as described in the "Expected Output" column of the milestones table.

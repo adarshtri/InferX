@@ -8,14 +8,17 @@ InferX is designed to be a robust, scalable inference server that handles reques
 This project is being developed following a structured **21-day roadmap**, moving from a simple service skeleton to a fully optimized, multi-worker inference system.
 
 ## 🛠 Project Structure
-- **/api**: Go HTTP server and request handling logic.
+- **/api/cmd/server**: Application entry point.
+- **/api/pkg/handlers**: HTTP request handlers and business logic.
+- **/api/pkg/models**: Global data structures and types.
 - **/docs**: Milestone tracking and design documentation.
 - **README.md**: Project overview and instructions.
 
-## 🚀 Current Status: Day 1 Complete
+## 🚀 Current Status: Day 2 Complete
 - [x] Initialized Go module.
 - [x] Implemented `/infer` endpoint.
-- [x] Standard library `net/http` implementation.
+- [x] **New**: Structured project into `cmd` and `pkg` layout.
+- [x] **New**: Implemented JSON decoding for inference requests.
 
 ## 🚦 Getting Started
 
@@ -26,18 +29,20 @@ This project is being developed following a structured **21-day roadmap**, movin
 To start the inference service:
 ```bash
 cd api
-go run main/main.go
+go run cmd/server/main.go
 ```
 
 ### Testing the Endpoint
-You can verify the service is running using `curl`:
+You can now send structured JSON payloads to the service:
 ```bash
-curl -X POST http://localhost:8080/infer
+curl -X POST http://localhost:8080/infer \
+  -H "Content-Type: application/json" \
+  -d '{"model": "llama-3", "prompt": "Hello InferX!"}'
 ```
 
 Expected output:
 ```json
-{"message":"Inference request received (dummy)","status":"queued"}
+{"status":"received","message":"Inference request successfully parsed","model":"llama-3"}
 ```
 
 ## 📅 Roadmap
