@@ -4,7 +4,7 @@
 |-----|------|------------|------------------|----------------|--------|
 | 1 | Service Skeleton | Create Go HTTP server, `/infer` endpoint, return dummy response | Go basics, HTTP handlers | API runs locally | ✅ |
 | 2 | Request Handling | Accept JSON input, parse into struct | Structs, JSON encoding/decoding | API accepts structured input | ✅ |
-| 3 | Queue | Add buffered channel, push requests into queue | Channels (buffered vs unbuffered) | Requests queued asynchronously | ⬜ |
+| 3 | Queue | Add buffered channel, push requests into queue | Channels (buffered vs unbuffered) | Requests queued asynchronously | ✅ |
 | 4 | Worker | Add single goroutine consuming queue | Goroutines, producer-consumer | Async processing works | ⬜ |
 | 5 | Worker Pool | Add multiple workers (4–8) | Concurrency patterns, worker pools | Parallel processing | ⬜ |
 | 6 | Load Test | Create simple load test script | Load testing basics | System tested under load | ⬜ |

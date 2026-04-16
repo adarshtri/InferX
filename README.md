@@ -5,20 +5,17 @@ A high-performance AI Inference System built with **Go** and **C++**.
 ## 📖 Project Overview
 InferX is designed to be a robust, scalable inference server that handles requests asynchronously. It features a Go-based API layer for request handling and a C++ core for optimized batch processing.
 
-This project is being developed following a structured **21-day roadmap**, moving from a simple service skeleton to a fully optimized, multi-worker inference system.
+## 🚀 Current Status: Day 3 Complete
+- ✅ **Day 1**: Basic HTTP server skeleton.
+- ✅ **Day 2**: JSON request parsing and validation.
+- ✅ **Day 3**: Integrated a buffered channel (`chan`) as a request queue with `202 Accepted` response logic.
 
 ## 🛠 Project Structure
-- **/api/cmd/server**: Application entry point.
-- **/api/pkg/handlers**: HTTP request handlers and business logic.
-- **/api/pkg/models**: Global data structures and types.
-- **/docs**: Milestone tracking and design documentation.
+- `api/cmd/server/main.go`: Application entry point; initializes queue and server.
+- `api/pkg/handlers/`: Contains the `Server` struct and HTTP handler methods.
+- `api/pkg/models/`: Global data structures and JSON types.
+- `/docs`: Progress tracking and design documentation.
 - **README.md**: Project overview and instructions.
-
-## 🚀 Current Status: Day 2 Complete
-- [x] Initialized Go module.
-- [x] Implemented `/infer` endpoint.
-- [x] **New**: Structured project into `cmd` and `pkg` layout.
-- [x] **New**: Implemented JSON decoding for inference requests.
 
 ## 🚦 Getting Started
 
@@ -28,8 +25,7 @@ This project is being developed following a structured **21-day roadmap**, movin
 ### Running the API
 To start the inference service:
 ```bash
-cd api
-go run cmd/server/main.go
+go run api/cmd/server/main.go
 ```
 
 ### Testing the Endpoint
@@ -40,10 +36,16 @@ curl -X POST http://localhost:8080/infer \
   -d '{"model": "llama-3", "prompt": "Hello InferX!"}'
 ```
 
-Expected output:
+Expected output (Day 3+):
 ```json
-{"status":"received","message":"Inference request successfully parsed","model":"llama-3"}
+{
+  "status": "queued",
+  "message": "Inference request successfully queued for processing",
+  "model": "llama-3"
+}
 ```
+
+**Note:** Since we haven't added workers yet (Day 4), requests will simply stay in the queue. You can see the queue depth increase in the server logs.
 
 ## 📅 Roadmap
 Detailed progress can be tracked in [mini-milestones.md](docs/mini-milestones.md).
