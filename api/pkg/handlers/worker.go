@@ -5,24 +5,30 @@ import (
 	"time"
 )
 
-// StartWorker begins a loop that consumes requests from the Queue.
-// It should be launched as a background goroutine.
-func (s *Server) StartWorker() {
-	log.Println("Day 4: Background worker started, waiting for tasks...")
+// StartWorkerPool launches numWorkers background goroutines, 
+// each pulling from the shared Queue.
+func (s *Server) StartWorkerPool(numWorkers int) {
+	log.Printf("Day 5: Starting worker pool with %d workers...", numWorkers)
 
-	// The 'range' loop over a channel is a common Go pattern.
-	// It will wait efficiently for a new value, process it, 
-	// and resume waiting until the channel is closed.
+	for i := 1; i <= numWorkers; i++ {
+		// Launch each worker in its own goroutine
+		go s.runWorker(i)
+	}
+}
+
+// runWorker is the internal loop that a single worker goroutine executes.
+func (s *Server) runWorker(id int) {
+	log.Printf("[Worker %d] Started, waiting for tasks...", id)
+
 	for req := range s.Queue {
-		log.Printf("[Worker] Starting processing for model: %s", req.Model)
+		log.Printf("[Worker %d] Starting processing for model: %s", id, req.Model)
 
-		// Day 4: Simulate inference compute time (latency)
-		// This simulates the actual heavy lifting of an LLM.
+		// Simulate inference latency
 		time.Sleep(500 * time.Millisecond)
 
-		log.Printf("[Worker] Completed processing for model: %s. Prompt snippet: '%.20s...'", req.Model, req.Prompt)
-		log.Printf("[Worker] Task finished. Current queue depth: %d", len(s.Queue))
+		log.Printf("[Worker %d] Completed processing for model: %s", id, req.Model)
+		log.Printf("[Worker %d] Task finished. Current queue depth: %d", id, len(s.Queue))
 	}
 
-	log.Println("Worker shutting down (channel closed).")
+	log.Printf("[Worker %d] Shutting down.", id)
 }
