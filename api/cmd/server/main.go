@@ -18,6 +18,10 @@ func main() {
 	// Initialize our server struct with the queue
 	srv := handlers.NewServer(inferenceQueue)
 
+	// Day 4: Launch our background worker
+	// The 'go' keyword turns this call into a background goroutine.
+	go srv.StartWorker()
+
 	// Register the handler method from our server instance
 	http.HandleFunc("/infer", srv.InferHandler)
 

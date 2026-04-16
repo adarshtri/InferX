@@ -5,14 +5,15 @@ A high-performance AI Inference System built with **Go** and **C++**.
 ## 📖 Project Overview
 InferX is designed to be a robust, scalable inference server that handles requests asynchronously. It features a Go-based API layer for request handling and a C++ core for optimized batch processing.
 
-## 🚀 Current Status: Day 3 Complete
+## 🚀 Current Status: Day 4 Complete
 - ✅ **Day 1**: Basic HTTP server skeleton.
-- ✅ **Day 2**: JSON request parsing and validation.
-- ✅ **Day 3**: Integrated a buffered channel (`chan`) as a request queue with `202 Accepted` response logic.
+- ✅ **Day 1-2**: Basic HTTP server with JSON request parsing.
+- ✅ **Day 3**: Integrated a buffered channel (`chan`) as a request queue.
+- ✅ **Day 4**: Implemented a background worker goroutine to process tasks with simulated 500ms latency.
 
 ## 🛠 Project Structure
-- `api/cmd/server/main.go`: Application entry point; initializes queue and server.
-- `api/pkg/handlers/`: Contains the `Server` struct and HTTP handler methods.
+- `api/pkg/handlers/worker.go`: Background worker logic.
+- `api/cmd/server/main.go`: Application entry point; initializes queue, server, and worker.
 - `api/pkg/models/`: Global data structures and JSON types.
 - `/docs`: Progress tracking and design documentation.
 - **README.md**: Project overview and instructions.
@@ -45,7 +46,7 @@ Expected output (Day 3+):
 }
 ```
 
-**Note:** Since we haven't added workers yet (Day 4), requests will simply stay in the queue. You can see the queue depth increase in the server logs.
+**Note:** As of Day 4, a background worker is now processing these tasks sequentially. Each task takes 500ms. You can monitor progress in the server console logs which show "Starting processing..." and "Completed processing...".
 
 ## 📅 Roadmap
 Detailed progress can be tracked in [mini-milestones.md](docs/mini-milestones.md).
