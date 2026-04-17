@@ -15,6 +15,7 @@ type Config struct {
 	WorkerCount      int
 	InferenceDelayMS int
 	BatchSize        int
+	BatchTimeoutMS   int
 }
 
 // Load initializes the configuration from environment variables or defaults.
@@ -30,6 +31,7 @@ func Load() *Config {
 		WorkerCount:      getEnvAsInt("WORKER_COUNT", 4),
 		InferenceDelayMS: getEnvAsInt("INFERENCE_DELAY_MS", 500),
 		BatchSize:        getEnvAsInt("BATCH_SIZE", 5),
+		BatchTimeoutMS:   getEnvAsInt("BATCH_TIMEOUT_MS", 100),
 	}
 }
 

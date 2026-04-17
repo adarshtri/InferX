@@ -22,14 +22,16 @@ type Server struct {
 	Queue          chan models.InferenceRequest
 	InferenceDelay time.Duration
 	BatchSize      int
+	BatchTimeout   time.Duration
 }
 
 // NewServer creates a new Server instance with the provided dependencies.
-func NewServer(queue chan models.InferenceRequest, delay time.Duration, batchSize int) *Server {
+func NewServer(queue chan models.InferenceRequest, delay time.Duration, batchSize int, timeout time.Duration) *Server {
 	return &Server{
 		Queue:          queue,
 		InferenceDelay: delay,
 		BatchSize:      batchSize,
+		BatchTimeout:   timeout,
 	}
 }
 
@@ -87,33 +89,56 @@ func (s *Server) StartWorkerPool(numWorkers int, wg *sync.WaitGroup) {
 // runWorker is the internal loop for processing tasks in batches.
 func (s *Server) runWorker(id int, wg *sync.WaitGroup) {
 	defer wg.Done()
-	slog.Info("worker started", "worker_id", id, "batch_size", s.BatchSize)
+	slog.Info("worker started", "worker_id", id, "batch_size", s.BatchSize, "batch_timeout", s.BatchTimeout)
 
 	for {
-		// Day 8: Create a fresh batch for this round
+		// 1. Wait for the FIRST request to arrive (this blocks indefinitely)
+		req, ok := <-s.Queue
+		if !ok {
+			slog.Info("worker shutting down", "worker_id", id)
+			return
+		}
+
+		// Day 9: We have the first request! Start the batch and the clock.
 		batch := models.InferenceBatch{
 			Requests: make([]models.InferenceRequest, 0, s.BatchSize),
 		}
+		batch.Requests = append(batch.Requests, req)
 
-		// Inner loop: Collect requests until we hit BatchSize
-		for i := 0; i < s.BatchSize; i++ {
-			req, ok := <-s.Queue
-			if !ok {
-				// The queue was closed (graceful shutdown)
-				// If we have a partial batch, we would process it here, 
-				// but for Day 8 simplicity, we just exit.
-				slog.Info("worker shutting down", "worker_id", id)
-				return
+		// Start a timer for the batch timeout
+		timer := time.NewTimer(s.BatchTimeout)
+
+		// 2. Collection loop: Grab more till batch is full OR timer fires
+		collecting := true
+		for collecting && len(batch.Requests) < s.BatchSize {
+			select {
+			case nextReq, ok := <-s.Queue:
+				if !ok {
+					collecting = false
+					break
+				}
+				batch.Requests = append(batch.Requests, nextReq)
+			case <-timer.C:
+				// Timeout! We flush whatever we have.
+				collecting = false
 			}
-			batch.Requests = append(batch.Requests, req)
 		}
 
-		// Now we have a full batch! Process it.
+		// Be a good citizen: stop the timer if it hasn't fired yet
+		if !timer.Stop() {
+			// If it already fired and we didn't catch it in the select, drain it
+			select {
+			case <-timer.C:
+			default:
+			}
+		}
+
+		// 3. Process whatever we collected (might be a partial batch)
 		slog.Info("worker processing batch", 
 			"worker_id", id, 
 			"batch_size", len(batch.Requests))
 
-		// Simulate inference latency for the whole batch
+		// Simulate inference latency
 		time.Sleep(s.InferenceDelay)
 
 		slog.Info("worker completed batch", 
