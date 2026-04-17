@@ -5,17 +5,16 @@ A high-performance AI Inference System built with **Go** and **C++**.
 ## 📖 Project Overview
 InferX is designed to be a robust, scalable inference server that handles requests asynchronously. It features a Go-based API layer for request handling and a C++ core for optimized batch processing.
 
-## 🚀 Current Status: Day 4 Complete
-- ✅ **Day 1**: Basic HTTP server skeleton.
-- ✅ **Day 1-4**: Basic HTTP server, JSON parsing, and background worker.
-- ✅ **Day 5**: Scaled to a **Worker Pool** (4 workers) for parallel request processing.
+## 🚀 Current Status: Day 6 Complete
+- ✅ **Day 1-5**: Parallel worker pool, async queue, and JSON request parsing.
+- ✅ **Day 6**: Implemented **Load Test** utility to Stress-test parallel throughput.
 
 ## 🛠 Project Structure
-- `api/pkg/handlers/worker.go`: Worker pool logic and concurrent consumption.
-- `api/cmd/server/main.go`: Entry point; initializes queue, server, and worker pool.
-- `api/pkg/models/`: Global data structures and JSON types.
+- `api/cmd/server/main.go`: Entry point for the main inference server.
+- `api/cmd/loadtest/main.go`: Concurrent load-testing utility.
+- `api/pkg/handlers/worker.go`: Background worker pool logic.
+- `api/pkg/models/`: Shared models and JSON types.
 - `/docs`: Progress tracking and design documentation.
-- **README.md**: Project overview and instructions.
 
 ## 🚦 Getting Started
 
@@ -29,12 +28,19 @@ go run api/cmd/server/main.go
 ```
 
 ### Testing the Endpoint
-You can now send structured JSON payloads to the service:
+Send a single request:
 ```bash
 curl -X POST http://localhost:8080/infer \
   -H "Content-Type: application/json" \
   -d '{"model": "llama-3", "prompt": "Hello InferX!"}'
 ```
+
+### Load Testing
+To stress-test the server with concurrent requests:
+```bash
+go run api/cmd/loadtest/main.go
+```
+This script sends 100 requests (10 at a time) and reports on the success rate and total throughput (req/sec).
 
 Expected output (Day 3+):
 ```json
