@@ -5,9 +5,9 @@ A high-performance AI Inference System built with **Go** and **C++**.
 ## 📖 Project Overview
 InferX is designed to be a robust, scalable inference server that handles requests asynchronously. It features a Go-based API layer for request handling and a C++ core for optimized batch processing.
 
-## 🚀 Current Status: Day 7 Complete
-- ✅ **Day 1-6**: API implementation, Worker Pool, and Load Testing.
-- ✅ **Day 7**: System Hardening (Structured Logging, Config Management, Graceful Shutdown, and Package Restructuring).
+## 🚀 Current Status: Day 8 Complete
+- ✅ **Day 1-7**: API, Worker Pool, Load Testing, and System Hardening.
+- ✅ **Day 8**: Basic Request Batching (Grouping multiple requests into single units).
 
 ## 🛠 Project Structure
 - `api/cmd/server/main.go`: Entry point for the main inference server.

@@ -9,7 +9,7 @@
 | 5 | Worker Pool | Add multiple workers (4–8) | Concurrency patterns, worker pools | Parallel processing | ✅ |
 | 6 | Load Test | Create simple load test script | Load testing basics | System tested under load | ✅ |
 | 7 | Cleanup | Refactor code, improve structure, add logs | Code organization | Stable base system | ✅ |
-| 8 | Batching | Collect requests into slice | Slices, grouping logic | Basic batching works | ⬜ |
+| 8 | Batching | Collect requests into slice | Slices, grouping logic | Basic batching works | ✅ |
 | 9 | Time Batching | Flush batch every X ms | Timers (`time.Ticker`) | Time-based batching | ⬜ |
 | 10 | Size Batching | Flush when batch size reached | Conditional triggers | Size-based batching | ⬜ |
 | 11 | Combined Batching | Flush on timeout OR size | `select` statement | Dynamic batching | ⬜ |
