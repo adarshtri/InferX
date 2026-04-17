@@ -14,6 +14,7 @@ type Config struct {
 	QueueSize        int
 	WorkerCount      int
 	InferenceDelayMS int
+	BatchSize        int
 }
 
 // Load initializes the configuration from environment variables or defaults.
@@ -28,6 +29,7 @@ func Load() *Config {
 		QueueSize:        getEnvAsInt("QUEUE_SIZE", 100),
 		WorkerCount:      getEnvAsInt("WORKER_COUNT", 4),
 		InferenceDelayMS: getEnvAsInt("INFERENCE_DELAY_MS", 500),
+		BatchSize:        getEnvAsInt("BATCH_SIZE", 5),
 	}
 }
 

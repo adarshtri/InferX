@@ -36,7 +36,7 @@ func main() {
 
 	// Initialize our server struct with the dependencies
 	inferenceDelay := time.Duration(cfg.InferenceDelayMS) * time.Millisecond
-	srv := server.NewServer(inferenceQueue, inferenceDelay)
+	srv := server.NewServer(inferenceQueue, inferenceDelay, cfg.BatchSize)
 
 	// Launch our background worker pool (pass the waitgroup)
 	srv.StartWorkerPool(cfg.WorkerCount, &wg)

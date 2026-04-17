@@ -21,13 +21,15 @@ var supportedModels = map[string]bool{
 type Server struct {
 	Queue          chan models.InferenceRequest
 	InferenceDelay time.Duration
+	BatchSize      int
 }
 
 // NewServer creates a new Server instance with the provided dependencies.
-func NewServer(queue chan models.InferenceRequest, delay time.Duration) *Server {
+func NewServer(queue chan models.InferenceRequest, delay time.Duration, batchSize int) *Server {
 	return &Server{
 		Queue:          queue,
 		InferenceDelay: delay,
+		BatchSize:      batchSize,
 	}
 }
 
@@ -82,19 +84,41 @@ func (s *Server) StartWorkerPool(numWorkers int, wg *sync.WaitGroup) {
 	}
 }
 
-// runWorker is the internal loop for processing tasks.
+// runWorker is the internal loop for processing tasks in batches.
 func (s *Server) runWorker(id int, wg *sync.WaitGroup) {
 	defer wg.Done()
-	slog.Info("worker started", "worker_id", id)
+	slog.Info("worker started", "worker_id", id, "batch_size", s.BatchSize)
 
-	for req := range s.Queue {
-		slog.Info("worker processing task", "worker_id", id, "model", req.Model)
+	for {
+		// Day 8: Create a fresh batch for this round
+		batch := models.InferenceBatch{
+			Requests: make([]models.InferenceRequest, 0, s.BatchSize),
+		}
 
-		// Simulate inference latency
+		// Inner loop: Collect requests until we hit BatchSize
+		for i := 0; i < s.BatchSize; i++ {
+			req, ok := <-s.Queue
+			if !ok {
+				// The queue was closed (graceful shutdown)
+				// If we have a partial batch, we would process it here, 
+				// but for Day 8 simplicity, we just exit.
+				slog.Info("worker shutting down", "worker_id", id)
+				return
+			}
+			batch.Requests = append(batch.Requests, req)
+		}
+
+		// Now we have a full batch! Process it.
+		slog.Info("worker processing batch", 
+			"worker_id", id, 
+			"batch_size", len(batch.Requests))
+
+		// Simulate inference latency for the whole batch
 		time.Sleep(s.InferenceDelay)
 
-		slog.Info("worker completed task", "worker_id", id, "model", req.Model, "depth", len(s.Queue))
+		slog.Info("worker completed batch", 
+			"worker_id", id, 
+			"batch_size", len(batch.Requests),
+			"queue_depth", len(s.Queue))
 	}
-
-	slog.Info("worker shutting down", "worker_id", id)
 }

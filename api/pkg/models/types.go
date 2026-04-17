@@ -12,3 +12,8 @@ type InferenceResponse struct {
 	Message string `json:"message"`
 	Model   string `json:"model,omitempty"`
 }
+
+// InferenceBatch represents a group of requests to be processed together.
+type InferenceBatch struct {
+	Requests []InferenceRequest
+}
