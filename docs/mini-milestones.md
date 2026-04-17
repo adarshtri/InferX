@@ -14,8 +14,8 @@
 | 10 | Size Batching | Flush when batch size reached | Conditional triggers | Size-based batching | ✅ |
 | 11 | Combined Batching | Flush on timeout OR size | `select` statement | Dynamic batching | ✅ |
 | 12 | Inference Sim | Add compute delay per batch | Workload simulation | Simulated inference | ✅ |
-| 13 | Latency | Measure request latency | Latency basics | Latency logging | ⬜ |
-| 14 | Experiments | Tune batch size, workers | Latency vs throughput | Performance insights | ⬜ |
+| 13 | Latency | Measure request latency | Latency basics | Latency logging | ✅ |
+| 14 | Experiments | Tune batch size, workers | Latency vs throughput | Performance insights | 🟨 |
 | 15 | C++ Setup | Create simple C++ batch function | Compilation basics | C++ module ready | ⬜ |
 | 16 | Integration | Call C++ from Go (cgo) | FFI basics | Go ↔ C++ working | ⬜ |
 | 17 | Optimization | Optimize C++ batch processing | Memory layout, avoiding copies | Faster execution | ⬜ |

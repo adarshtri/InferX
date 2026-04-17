@@ -6,12 +6,8 @@ A high-performance AI Inference System built with **Go** and **C++**.
 InferX is designed to be a robust, scalable inference server that handles requests asynchronously. It features a Go-based API layer for request handling and a C++ core for optimized batch processing.
 
 ## 🚀 Current Status: Day 12 Complete
-- ✅ **Day 1-7**: API, Worker Pool, Load Testing, and System Hardening.
-- ✅ **Day 8**: Basic Request Batching (Grouping multiple requests into single units).
-- ✅ **Day 8-11**: Dynamic Batching (Time & Size based).
-- ✅ **Day 12**: Advanced Inference Simulation (Dynamic compute costs based on batch size).
-
-**Note:** The new Dynamic Inference Simulation now adjusts processing latency based on the total token count of the batch, providing a more realistic performance profile.
+- ✅ **Day 1-13**: Core engine, Dynamic Batching, and Latency Measurement.
+- 🟨 **Day 14**: Tuning Experiments (Optimizing throughput vs latency).
 
 ## 🛠 Project Structure
 - `api/cmd/server/main.go`: Entry point for the main inference server.
