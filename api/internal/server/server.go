@@ -54,6 +54,9 @@ func (s *Server) InferHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Day 13: Capture the arrival time for latency measurement
+	req.CreatedAt = time.Now()
+
 	// Basic validation
 	if !supportedModels[req.Model] {
 		slog.Warn("unsupported model requested", "model", req.Model)
@@ -145,9 +148,14 @@ func (s *Server) runWorker(id int, wg *sync.WaitGroup) {
 		// Simulate inference latency (dynamic based on batch size)
 		time.Sleep(calcDelay)
 
+		// Final completion log with latency metrics
+		finishedAt := time.Now()
+		totalLatency := finishedAt.Sub(batch.Requests[0].CreatedAt)
+
 		slog.Info("worker completed batch", 
 			"worker_id", id, 
 			"batch_size", len(batch.Requests),
-			"queue_depth", len(s.Queue))
+			"queue_depth", len(s.Queue),
+			"total_latency_ms", totalLatency.Milliseconds())
 	}
 }

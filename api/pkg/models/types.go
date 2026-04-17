@@ -1,9 +1,12 @@
 package models
 
+import "time"
+
 // InferenceRequest represents the incoming JSON payload for an inference task.
 type InferenceRequest struct {
-	Model  string `json:"model"`
-	Prompt string `json:"prompt"`
+	Model     string    `json:"model"`
+	Prompt    string    `json:"prompt"`
+	CreatedAt time.Time `json:"-"`
 }
 
 // InferenceResponse represents the JSON payload sent back to the client.
