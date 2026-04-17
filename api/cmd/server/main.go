@@ -22,11 +22,12 @@ func main() {
 
 	// Load centralized configuration
 	cfg := config.Load()
-	slog.Info("initializing InferX server", 
-		"port", cfg.Port, 
-		"queue_size", cfg.QueueSize, 
+	slog.Info("initializing InferX server",
+		"port", cfg.Port,
+		"queue_size", cfg.QueueSize,
 		"worker_count", cfg.WorkerCount,
-		"inference_delay_ms", cfg.InferenceDelayMS)
+		"base_delay_ms", cfg.BaseDelayMS,
+		"per_req_delay_ms", cfg.PerRequestDelayMS)
 
 	// Day 7: WaitGroup for tracking background workers
 	var wg sync.WaitGroup
@@ -35,9 +36,10 @@ func main() {
 	inferenceQueue := make(chan models.InferenceRequest, cfg.QueueSize)
 
 	// Initialize our server struct with the dependencies
-	inferenceDelay := time.Duration(cfg.InferenceDelayMS) * time.Millisecond
+	baseDelay := time.Duration(cfg.BaseDelayMS) * time.Millisecond
+	perReqDelay := time.Duration(cfg.PerRequestDelayMS) * time.Millisecond
 	batchTimeout := time.Duration(cfg.BatchTimeoutMS) * time.Millisecond
-	srv := server.NewServer(inferenceQueue, inferenceDelay, cfg.BatchSize, batchTimeout)
+	srv := server.NewServer(inferenceQueue, baseDelay, perReqDelay, cfg.BatchSize, batchTimeout)
 
 	// Launch our background worker pool (pass the waitgroup)
 	srv.StartWorkerPool(cfg.WorkerCount, &wg)

@@ -19,19 +19,21 @@ var supportedModels = map[string]bool{
 
 // Server holds dependencies for our HTTP handlers and inference engine.
 type Server struct {
-	Queue          chan models.InferenceRequest
-	InferenceDelay time.Duration
-	BatchSize      int
-	BatchTimeout   time.Duration
+	Queue           chan models.InferenceRequest
+	BaseDelay       time.Duration
+	PerRequestDelay time.Duration
+	BatchSize       int
+	BatchTimeout    time.Duration
 }
 
 // NewServer creates a new Server instance with the provided dependencies.
-func NewServer(queue chan models.InferenceRequest, delay time.Duration, batchSize int, timeout time.Duration) *Server {
+func NewServer(queue chan models.InferenceRequest, baseDelay, perReqDelay time.Duration, batchSize int, timeout time.Duration) *Server {
 	return &Server{
-		Queue:          queue,
-		InferenceDelay: delay,
-		BatchSize:      batchSize,
-		BatchTimeout:   timeout,
+		Queue:           queue,
+		BaseDelay:       baseDelay,
+		PerRequestDelay: perReqDelay,
+		BatchSize:       batchSize,
+		BatchTimeout:    timeout,
 	}
 }
 
@@ -134,12 +136,14 @@ func (s *Server) runWorker(id int, wg *sync.WaitGroup) {
 		}
 
 		// 3. Process whatever we collected (might be a partial batch)
+		calcDelay := s.BaseDelay + (s.PerRequestDelay * time.Duration(len(batch.Requests)))
 		slog.Info("worker processing batch", 
 			"worker_id", id, 
-			"batch_size", len(batch.Requests))
+			"batch_size", len(batch.Requests),
+			"compute_cost_ms", calcDelay.Milliseconds())
 
-		// Simulate inference latency
-		time.Sleep(s.InferenceDelay)
+		// Simulate inference latency (dynamic based on batch size)
+		time.Sleep(calcDelay)
 
 		slog.Info("worker completed batch", 
 			"worker_id", id, 

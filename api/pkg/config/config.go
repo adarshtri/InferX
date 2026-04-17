@@ -13,7 +13,8 @@ type Config struct {
 	Port             string
 	QueueSize        int
 	WorkerCount      int
-	InferenceDelayMS int
+	BaseDelayMS      int
+	PerRequestDelayMS int
 	BatchSize        int
 	BatchTimeoutMS   int
 }
@@ -29,7 +30,8 @@ func Load() *Config {
 		Port:             getEnv("PORT", ":8080"),
 		QueueSize:        getEnvAsInt("QUEUE_SIZE", 100),
 		WorkerCount:      getEnvAsInt("WORKER_COUNT", 4),
-		InferenceDelayMS: getEnvAsInt("INFERENCE_DELAY_MS", 500),
+		BaseDelayMS:      getEnvAsInt("BASE_DELAY_MS", 100),
+		PerRequestDelayMS: getEnvAsInt("PER_REQUEST_DELAY_MS", 50),
 		BatchSize:        getEnvAsInt("BATCH_SIZE", 5),
 		BatchTimeoutMS:   getEnvAsInt("BATCH_TIMEOUT_MS", 100),
 	}
