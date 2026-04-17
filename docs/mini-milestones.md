@@ -10,10 +10,10 @@
 | 6 | Load Test | Create simple load test script | Load testing basics | System tested under load | ✅ |
 | 7 | Cleanup | Refactor code, improve structure, add logs | Code organization | Stable base system | ✅ |
 | 8 | Batching | Collect requests into slice | Slices, grouping logic | Basic batching works | ✅ |
-| 9 | Time Batching | Flush batch every X ms | Timers (`time.Ticker`) | Time-based batching | ⬜ |
-| 10 | Size Batching | Flush when batch size reached | Conditional triggers | Size-based batching | ⬜ |
-| 11 | Combined Batching | Flush on timeout OR size | `select` statement | Dynamic batching | ⬜ |
-| 12 | Inference Sim | Add compute delay per batch | Workload simulation | Simulated inference | ⬜ |
+| 9 | Time Batching | Flush batch every X ms | Timers (`time.Ticker`) | Time-based batching | ✅ |
+| 10 | Size Batching | Flush when batch size reached | Conditional triggers | Size-based batching | ✅ |
+| 11 | Combined Batching | Flush on timeout OR size | `select` statement | Dynamic batching | ✅ |
+| 12 | Inference Sim | Add compute delay per batch | Workload simulation | Simulated inference | ✅ |
 | 13 | Latency | Measure request latency | Latency basics | Latency logging | ⬜ |
 | 14 | Experiments | Tune batch size, workers | Latency vs throughput | Performance insights | ⬜ |
 | 15 | C++ Setup | Create simple C++ batch function | Compilation basics | C++ module ready | ⬜ |
