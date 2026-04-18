@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  inferx:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SCENARIO=${SCENARIO:-default}
+      - BATCH_SIZE=${BATCH_SIZE:-10}
+      - NUM_WORKERS=${NUM_WORKERS:-8}
+    restart: always

@@ -1,27 +1,28 @@
-# Variables
-CXX = clang++
-CXXFLAGS = -dynamiclib -fPIC -Iengine
-LDFLAGS = -Llib
-LIB_NAME = libengine.dylib
-ENGINE_SRC = engine/engine.cpp
-API_SERVER = api/cmd/server/main.go
+# InferX Docker-First Orchestration
 
-# Standard build
-all: lib bridge-test server
+.PHONY: run stop logs clean help
 
-# Build the C++ shared library
-lib:
-	mkdir -p lib
-	$(CXX) $(CXXFLAGS) -install_name @rpath/$(LIB_NAME) -o lib/$(LIB_NAME) $(ENGINE_SRC)
+# Default target: build and start the server
+run:
+	SCENARIO=$(SCENARIO) BATCH_SIZE=$(BATCH_SIZE) NUM_WORKERS=$(NUM_WORKERS) docker-compose up --build
 
-# Build the Go server
-server: lib
-	cd api && go build -o ../server cmd/server/main.go
+# Stop the server and clean up containers
+stop:
+	docker-compose down
 
-# Verify the bridge with a test
-test: lib
-	cd api && DYLD_LIBRARY_PATH=$(PWD)/lib go test -v ./internal/engine/...
+# Tail the server logs
+logs:
+	docker-compose logs -f
 
-# Clean build artifacts
+# Nuclear clean: Remove containers, volumes, and images
 clean:
-	rm -rf lib server
+	docker-compose down -v --rmi all
+	rm -rf lib/
+
+# Help menu
+help:
+	@echo "InferX Management Commands:"
+	@echo "  make run         - Build and start the hybrid server in Docker"
+	@echo "  make stop        - Stop the server and containers"
+	@echo "  make logs        - Tail the server logs"
+	@echo "  make clean       - Remove all Docker artifacts and local /lib"

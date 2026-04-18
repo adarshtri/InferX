@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/atrivedi/InferX/api/internal/engine"
 	"github.com/atrivedi/InferX/api/pkg/models"
 )
 
@@ -138,15 +139,17 @@ func (s *Server) runWorker(id int, wg *sync.WaitGroup) {
 			}
 		}
 
-		// 3. Process whatever we collected (might be a partial batch)
+		// 3. Process the batch using the C++ Engine
 		calcDelay := s.BaseDelay + (s.PerRequestDelay * time.Duration(len(batch.Requests)))
 		slog.Info("worker processing batch", 
 			"worker_id", id, 
 			"batch_size", len(batch.Requests),
-			"compute_cost_ms", calcDelay.Milliseconds())
+			"expected_compute_ms", calcDelay.Milliseconds())
 
-		// Simulate inference latency (dynamic based on batch size)
-		time.Sleep(calcDelay)
+		// Replace simulated latency with real C++ call
+		if err := engine.ProcessBatch(len(batch.Requests)); err != nil {
+			slog.Error("C++ engine error", "worker_id", id, "error", err)
+		}
 
 		// Final completion log with latency metrics
 		finishedAt := time.Now()

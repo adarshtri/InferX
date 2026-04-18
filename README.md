@@ -5,15 +5,19 @@ A high-performance AI Inference System built with **Go** and **C++**.
 ## 📖 Project Overview
 InferX is designed to be a robust, scalable inference server that handles requests asynchronously. It features a Go-based API layer for request handling and a C++ core for optimized batch processing.
 
-## 🚀 Current Status: Day 12 Complete
-- ✅ **Day 1-13**: Core engine, Dynamic Batching, and Latency Measurement.
-- ✅ **Day 14**: Tuning Experiments (Formalized Benchmark Suite & Scaling Report).
-- ✅ **Day 15**: C++ Inference Core Setup (Monorepo with Dynamic Linking).
-- ⬜ **Day 16**: Integration (Replacing simulations with real C++ calls).
+### Current Status
+✅ **Day 16**: Successfully integrated C++ engine with Go API via Docker. Transitioned to containerized multi-stage build system to resolve macOS SDK mismatches.
 
-## 🛠 Project Structure
-- `api/cmd/server/main.go`: Entry point for the main inference server.
-- `api/internal/server/`: Core inference engine (Worker Pool, Queue, and Handlers).
+### Project Structure
+- `api/`: Go-based server and load testing suite.
+- `engine/`: High-performance C++ inference core.
+- `lib/`: Compiled static libraries (container-only).
+- `Dockerfile`: Multi-stage build for hybrid Go/C++ binary.
+
+### Quick Start
+1. **Run Server (Docker)**: `make docker-run`
+2. **Run Load Test**: `cd api && go run cmd/loadtest/main.go`
+3. **Stop Server**: `make docker-stop`
 - `api/pkg/config/`: Configuration management (Env vars & .env support).
 - `api/pkg/models/`: Shared models and JSON types.
 - `api/cmd/loadtest/main.go`: Concurrent load-testing utility.

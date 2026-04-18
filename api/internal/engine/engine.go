@@ -1,7 +1,7 @@
 package engine
 
 /*
-#cgo LDFLAGS: -L${SRCDIR}/../../../lib -lengine -Wl,-rpath,${SRCDIR}/../../../lib
+#cgo LDFLAGS: -L${SRCDIR}/../../../lib -lengine
 #cgo CPPFLAGS: -I${SRCDIR}/../../../engine
 #include "bridge.h"
 */
