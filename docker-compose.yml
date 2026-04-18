@@ -11,4 +11,5 @@ services:
       - SCENARIO=${SCENARIO:-default}
       - BATCH_SIZE=${BATCH_SIZE:-10}
       - NUM_WORKERS=${NUM_WORKERS:-8}
+      - QUEUE_SIZE=${QUEUE_SIZE:-100}
     restart: always

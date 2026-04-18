@@ -63,22 +63,37 @@ func (s *Server) InferHandler(w http.ResponseWriter, r *http.Request) {
 		slog.Warn("unsupported model requested", "model", req.Model)
 	}
 
-	// Pushing the request into our buffered queue
-	slog.Info("queuing inference request", "model", req.Model)
-	s.Queue <- req
-	slog.Info("request successfully queued", "model", req.Model, "depth", len(s.Queue))
+	// 4. Pushing the request into our buffered queue with backpressure
+	select {
+	case s.Queue <- req:
+		slog.Info("request successfully queued", "model", req.Model, "depth", len(s.Queue))
+		
+		// Prepare the successful response
+		resp := models.InferenceResponse{
+			Status:  "queued",
+			Message: "Inference request successfully queued for processing",
+			Model:   req.Model,
+		}
 
-	// Prepare the response
-	resp := models.InferenceResponse{
-		Status:  "queued",
-		Message: "Inference request successfully queued for processing",
-		Model:   req.Model,
-	}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			slog.Error("error encoding response", "error", err)
+		}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusAccepted)
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		slog.Error("error encoding response", "error", err)
+	default:
+		// LOAD SHEDDING: The queue is full!
+		slog.Warn("load shedding triggered: queue full", "depth", len(s.Queue))
+		
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Retry-After", "10") // Suggest retrying in 10 seconds
+		w.WriteHeader(http.StatusTooManyRequests)
+		
+		resp := models.InferenceResponse{
+			Status:  "rejected",
+			Message: "Server is overloaded. Please try again later.",
+		}
+		json.NewEncoder(w).Encode(resp)
 	}
 }
 

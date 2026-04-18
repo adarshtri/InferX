@@ -1,0 +1,8 @@
+{
+  "queue_size": 5,
+  "worker_count": 1,
+  "batch_size": 10,
+  "base_delay_ms": 100,
+  "per_request_delay_ms": 50,
+  "batch_timeout_ms": 1000
+}

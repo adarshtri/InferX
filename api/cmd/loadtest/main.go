@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -14,9 +13,15 @@ import (
 
 const (
 	targetURL   = "http://localhost:8080/infer"
-	numRequests = 100
-	concurrency = 10
+	numRequests = 200
+	concurrency = 20
 )
+
+type TestResult struct {
+	ID         int
+	StatusCode int
+	Error      error
+}
 
 func main() {
 	fmt.Printf("Starting load test: %d requests total, %d at a time\n", numRequests, concurrency)
@@ -24,7 +29,7 @@ func main() {
 	start := time.Now()
 
 	var wg sync.WaitGroup
-	results := make(chan bool, numRequests)
+	results := make(chan TestResult, numRequests)
 
 	// Semaphore to control concurrency
 	sem := make(chan struct{}, concurrency)
@@ -37,8 +42,7 @@ func main() {
 			sem <- struct{}{} // Acquire slot
 			defer func() { <-sem }() // Release slot
 
-			success := sendRequest(id)
-			results <- success
+			results <- sendRequest(id)
 		}(i)
 	}
 
@@ -49,23 +53,33 @@ func main() {
 	}()
 
 	successCount := 0
+	rejectedCount := 0
+	errorCount := 0
+
 	for res := range results {
-		if res {
+		if res.Error != nil {
+			errorCount++
+		} else if res.StatusCode == http.StatusAccepted {
 			successCount++
+		} else if res.StatusCode == http.StatusTooManyRequests {
+			rejectedCount++
+		} else {
+			errorCount++
 		}
 	}
 
 	duration := time.Since(start)
 	
 	fmt.Println("\n--- Load Test Results ---")
-	fmt.Printf("Total Requests: %d\n", numRequests)
-	fmt.Printf("Successes:      %d\n", successCount)
-	fmt.Printf("Failures:       %d\n", numRequests-successCount)
-	fmt.Printf("Total Duration: %v\n", duration)
-	fmt.Printf("Requests/sec:   %.2f\n", float64(numRequests)/duration.Seconds())
+	fmt.Printf("Total Requests:   %d\n", numRequests)
+	fmt.Printf("Successes (202):  %d\n", successCount)
+	fmt.Printf("Rejections (429): %d\n", rejectedCount)
+	fmt.Printf("Hard Failures:    %d\n", errorCount)
+	fmt.Printf("Total Duration:   %v\n", duration)
+	fmt.Printf("Requests/sec:     %.2f\n", float64(numRequests)/duration.Seconds())
 }
 
-func sendRequest(id int) bool {
+func sendRequest(id int) TestResult {
 	reqBody := models.InferenceRequest{
 		Model:  "gpt-4",
 		Prompt: fmt.Sprintf("Load test prompt %d", id),
@@ -73,16 +87,14 @@ func sendRequest(id int) bool {
 
 	jsonBody, err := json.Marshal(reqBody)
 	if err != nil {
-		log.Printf("[Request %d] Encoding error: %v", id, err)
-		return false
+		return TestResult{ID: id, Error: err}
 	}
 
 	resp, err := http.Post(targetURL, "application/json", bytes.NewBuffer(jsonBody))
 	if err != nil {
-		// Log error but don't stop the test
-		return false
+		return TestResult{ID: id, Error: err}
 	}
 	defer resp.Body.Close()
 
-	return resp.StatusCode == http.StatusAccepted
+	return TestResult{ID: id, StatusCode: resp.StatusCode}
 }

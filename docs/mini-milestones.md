@@ -19,7 +19,7 @@
 | 15 | C++ Setup | Create simple C++ batch function | Compilation basics | C++ module ready | ✅ |
 | 16 | Integration | Call C++ from Go (cgo) | FFI basics | Go ↔ C++ working | ✅ |
 | 17 | Optimization | Optimize C++ batch processing | Memory layout, avoiding copies | Faster execution | ✅ |
-| 18 | Backpressure | Add bounded queue, reject overload | Load shedding | Stable under load | ⬜ |
+| 18 | Backpressure | Add bounded queue, reject overload | Load shedding | Stable under load | ✅ |
 | 19 | Metrics | Track latency, throughput, queue size | Observability basics | Metrics available | ⬜ |
 | 20 | Profiling | Identify bottlenecks | Performance analysis | Bottleneck insights | ⬜ |
 | 21 | Finalize | Clean code, add README, diagram | System design clarity | Portfolio-ready project | ⬜ |

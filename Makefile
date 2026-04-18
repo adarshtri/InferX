@@ -4,7 +4,7 @@
 
 # Default target: build and start the server
 run:
-	SCENARIO=$(SCENARIO) BATCH_SIZE=$(BATCH_SIZE) NUM_WORKERS=$(NUM_WORKERS) docker-compose up --build
+	SCENARIO=$(SCENARIO) docker-compose up --build
 
 # Stop the server and clean up containers
 stop:
