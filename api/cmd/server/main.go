@@ -9,6 +9,7 @@ import (
 	"sync"
 	"syscall"
 	"time"
+	"net/http/pprof"
 
 	"github.com/atrivedi/InferX/api/internal/server"
 	"github.com/atrivedi/InferX/api/pkg/config"
@@ -48,6 +49,13 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/infer", srv.InferHandler)
 	mux.HandleFunc("/metrics", srv.MetricsHandler)
+	
+	// Register pprof handlers
+	mux.HandleFunc("/debug/pprof/", pprof.Index)
+	mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+	mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
+	mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
 
 	// Manual http.Server for graceful shutdown
 	httpServer := &http.Server{

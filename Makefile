@@ -10,6 +10,10 @@ run:
 stop:
 	docker-compose down
 
+# Capture a 10s CPU profile and open the UI (run while server is active)
+profile:
+	go tool pprof -http=:8081 http://localhost:8080/debug/pprof/profile?seconds=10
+
 # Tail the server logs
 logs:
 	docker-compose logs -f
