@@ -16,7 +16,7 @@
 | 12 | Inference Sim | Add compute delay per batch | Workload simulation | Simulated inference | ✅ |
 | 13 | Latency | Measure request latency | Latency basics | Latency logging | ✅ |
 | 14 | Experiments | Tune batch size, workers | Latency vs throughput | Performance insights | ✅ |
-| 15 | C++ Setup | Create simple C++ batch function | Compilation basics | C++ module ready | ⬜ |
+| 15 | C++ Setup | Create simple C++ batch function | Compilation basics | C++ module ready | ✅ |
 | 16 | Integration | Call C++ from Go (cgo) | FFI basics | Go ↔ C++ working | ⬜ |
 | 17 | Optimization | Optimize C++ batch processing | Memory layout, avoiding copies | Faster execution | ⬜ |
 | 18 | Backpressure | Add bounded queue, reject overload | Load shedding | Stable under load | ⬜ |

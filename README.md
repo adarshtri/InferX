@@ -8,7 +8,8 @@ InferX is designed to be a robust, scalable inference server that handles reques
 ## 🚀 Current Status: Day 12 Complete
 - ✅ **Day 1-13**: Core engine, Dynamic Batching, and Latency Measurement.
 - ✅ **Day 14**: Tuning Experiments (Formalized Benchmark Suite & Scaling Report).
-- ⬜ **Day 15**: C++ Inference Core Setup.
+- ✅ **Day 15**: C++ Inference Core Setup (Monorepo with Dynamic Linking).
+- ⬜ **Day 16**: Integration (Replacing simulations with real C++ calls).
 
 ## 🛠 Project Structure
 - `api/cmd/server/main.go`: Entry point for the main inference server.
