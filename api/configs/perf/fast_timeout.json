@@ -1,0 +1,5 @@
+{
+  "batch_timeout_ms": 20,
+  "worker_count": 8,
+  "batch_size": 10
+}

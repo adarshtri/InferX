@@ -13,25 +13,30 @@ This document tracks our observations and lessons learned regarding high-through
 ## 🧪 Key Observations
 
 ### 1. The "Queueing Tax" (Day 13)
-We've identified that latency is non-linear under saturation. Even with a static compute cost, end-to-end user latency grows in "waves" corresponding to the number of workers:
+We've identified that latency is non-linear under saturation. Even with a static compute cost, end-to-end user latency grows in "waves" corresponding to the number of workers.
 
-- **Wave 1 (Requests 1-20)**: ~350ms latency (No wait, just work).
-- **Wave 2 (Requests 21-40)**: ~700ms latency (350ms wait + 350ms work).
-- **Wave 3 (Requests 41-60)**: ~1050ms latency (700ms wait + 350ms work).
+### 2. Vertical Scaling: Adding Workers (Day 14 - Exp 1)
+- **Config**: 8 Workers, Batch Size 5.
+- **Finding**: Doubling workers widened Wave 1 (from 20 to 40 requests).
+- **Verdict**: Best for reducing individual wait-times for lucky users.
 
-**Conclusion**: To keep latency low, we must either increase workers or increase batching efficiency to drain the queue faster than it fills.
+### 3. Horizontal Scaling: Larger Batches (Day 14 - Exp 2)
+- **Config**: 8 Workers, Batch Size 10.
+- **Finding**: Doubling batch size significantly increased the "Compute Cost" (350ms → 600ms) but widened Wave 1 even further (from 40 to 80 requests).
+- **Verdict**: Best for maximizing system throughput and creating a more predictable (though slightly higher) latency baseline for the majority of users.
 
-### 2. Batching Efficiency vs. Latency Tradeoff
-- **Size Batching**: Improves throughput (processes more per worker) but can increase latency for the "first" person in the batch if traffic is low.
-- **Time Batching**: Guarantees a "maximum wait time" (our 100ms timeout) but might result in smaller, less efficient batches under low load.
+### 4. Latency Optimization: Shorter Timeouts (Day 14 - Exp 3)
+- **Config**: 8 Workers, Batch Size 10, **20ms Timeout**.
+- **Finding**: Slashing the timeout from 100ms to 20ms significantly reduced idle wait-time for individual users without impacting peak throughput.
+- **Verdict**: Shorter timeouts increase worker "aggression" and provide a better experience for low-traffic scenarios while staying efficient under load.
 
 ---
 
-## 📈 Current Scaling Parameters
+## 📈 Current Scaling Parameters (The "Sweet Spot")
 
-- **Workers**: 4
-- **Batch Size**: 5
-- **Batch Timeout**: 100ms
+- **Workers**: 8
+- **Batch Size**: 10
+- **Batch Timeout**: 20ms
 - **Queue Buffer**: 100
 
-*Next: We will begin experimenting with these parameters on Day 14 to find the "Sweet Spot" for maximum throughput with acceptable latency.*
+**Performance Profile**: Under a 100-request burst, 80% of users experience ~615ms latency, and the system handles ~4,500 RPS. Individual users under low load experience ~170ms latency.
