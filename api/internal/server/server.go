@@ -2,9 +2,11 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/atrivedi/InferX/api/internal/engine"
@@ -18,6 +20,13 @@ var supportedModels = map[string]bool{
 	"mistral": true,
 }
 
+// Metrics holds atomic counters for server observability.
+type Metrics struct {
+	AcceptedTotal  atomic.Uint64
+	RejectedTotal  atomic.Uint64
+	ProcessedTotal atomic.Uint64
+}
+
 // Server holds dependencies for our HTTP handlers and inference engine.
 type Server struct {
 	Queue           chan models.InferenceRequest
@@ -25,6 +34,7 @@ type Server struct {
 	PerRequestDelay time.Duration
 	BatchSize       int
 	BatchTimeout    time.Duration
+	Metrics         *Metrics
 }
 
 // NewServer creates a new Server instance with the provided dependencies.
@@ -35,6 +45,7 @@ func NewServer(queue chan models.InferenceRequest, baseDelay, perReqDelay time.D
 		PerRequestDelay: perReqDelay,
 		BatchSize:       batchSize,
 		BatchTimeout:    timeout,
+		Metrics:         &Metrics{},
 	}
 }
 
@@ -66,6 +77,7 @@ func (s *Server) InferHandler(w http.ResponseWriter, r *http.Request) {
 	// 4. Pushing the request into our buffered queue with backpressure
 	select {
 	case s.Queue <- req:
+		s.Metrics.AcceptedTotal.Add(1)
 		slog.Info("request successfully queued", "model", req.Model, "depth", len(s.Queue))
 		
 		// Prepare the successful response
@@ -83,6 +95,7 @@ func (s *Server) InferHandler(w http.ResponseWriter, r *http.Request) {
 
 	default:
 		// LOAD SHEDDING: The queue is full!
+		s.Metrics.RejectedTotal.Add(1)
 		slog.Warn("load shedding triggered: queue full", "depth", len(s.Queue))
 		
 		w.Header().Set("Content-Type", "application/json")
@@ -172,6 +185,9 @@ func (s *Server) runWorker(id int, wg *sync.WaitGroup) {
 			slog.Error("C++ engine error", "worker_id", id, "error", err)
 		}
 
+		// Increment total processed requests after batch completes
+		s.Metrics.ProcessedTotal.Add(uint64(len(batch.Requests)))
+
 		// Final completion log with latency metrics
 		finishedAt := time.Now()
 		totalLatency := finishedAt.Sub(batch.Requests[0].CreatedAt)
@@ -182,4 +198,25 @@ func (s *Server) runWorker(id int, wg *sync.WaitGroup) {
 			"queue_depth", len(s.Queue),
 			"total_latency_ms", totalLatency.Milliseconds())
 	}
+}
+
+// MetricsHandler returns the current server stats in Prometheus text format.
+func (s *Server) MetricsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/plain; version=0.0.4; charset=utf-8")
+
+	fmt.Fprintf(w, "# HELP inferx_requests_accepted_total Total number of inference requests accepted into the queue\n")
+	fmt.Fprintf(w, "# TYPE inferx_requests_accepted_total counter\n")
+	fmt.Fprintf(w, "inferx_requests_accepted_total %d\n\n", s.Metrics.AcceptedTotal.Load())
+
+	fmt.Fprintf(w, "# HELP inferx_requests_rejected_total Total number of inference requests rejected due to backpressure\n")
+	fmt.Fprintf(w, "# TYPE inferx_requests_rejected_total counter\n")
+	fmt.Fprintf(w, "inferx_requests_rejected_total %d\n\n", s.Metrics.RejectedTotal.Load())
+
+	fmt.Fprintf(w, "# HELP inferx_requests_processed_total Total number of inference requests processed by the C++ engine\n")
+	fmt.Fprintf(w, "# TYPE inferx_requests_processed_total counter\n")
+	fmt.Fprintf(w, "inferx_requests_processed_total %d\n\n", s.Metrics.ProcessedTotal.Load())
+
+	fmt.Fprintf(w, "# HELP inferx_queue_depth_current Current number of requests waiting in the queue\n")
+	fmt.Fprintf(w, "# TYPE inferx_queue_depth_current gauge\n")
+	fmt.Fprintf(w, "inferx_queue_depth_current %d\n", len(s.Queue))
 }

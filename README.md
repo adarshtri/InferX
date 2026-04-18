@@ -8,7 +8,7 @@ InferX is designed to be a robust, scalable inference server that handles reques
 The system uses a **Worker Pool** and **Dynamic Batching** to maximize throughput, bridging Go's concurrency with C++'s raw compute power via a zero-copy Cgo interface.
 
 ### Current Status
-✅ **Day 18**: Implemented Backpressure and Load Shedding. Verified 1,000+ Requests/sec stability under extreme load by gracefully rejecting excess traffic with HTTP 429.
+✅ **Day 19**: Successfully implemented real-time observability via a Prometheus-compatible `/metrics` endpoint. Verified 100% accuracy of atomic counters under heavy load (1,000+ RPS).
 
 ### Project Structure
 - `api/`: Go-based server and load testing suite.

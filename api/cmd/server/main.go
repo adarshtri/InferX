@@ -47,6 +47,7 @@ func main() {
 	// Setup our HTTP routes
 	mux := http.NewServeMux()
 	mux.HandleFunc("/infer", srv.InferHandler)
+	mux.HandleFunc("/metrics", srv.MetricsHandler)
 
 	// Manual http.Server for graceful shutdown
 	httpServer := &http.Server{
