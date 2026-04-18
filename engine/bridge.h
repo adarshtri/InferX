@@ -5,9 +5,9 @@
 extern "C" {
 #endif
 
-// ProcessBatch simulates an inference batch processing.
+// ProcessBatch processes an inference batch using real metadata.
 // Returns 0 on success.
-int ProcessBatch(int batch_size);
+int ProcessBatch(const int* prompt_lengths, int batch_size);
 
 #ifdef __cplusplus
 }

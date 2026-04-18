@@ -6,11 +6,11 @@ A high-performance AI Inference System built with **Go** and **C++**.
 InferX is designed to be a robust, scalable inference server that handles requests asynchronously. It features a Go-based API layer for request handling and a C++ core for optimized batch processing.
 
 ### Current Status
-✅ **Day 16**: Successfully integrated C++ engine with Go API via Docker. Transitioned to containerized multi-stage build system to resolve macOS SDK mismatches.
+✅ **Day 17**: Successfully implemented zero-copy Cgo bridge using `unsafe.SliceData`. C++ engine now processes batches using real request metadata (prompt lengths) for variable compute simulation.
 
 ### Project Structure
 - `api/`: Go-based server and load testing suite.
-- `engine/`: High-performance C++ inference core.
+- `engine/`: High-performance C++ inference core with metadata-aware processing.
 - `lib/`: Compiled static libraries (container-only).
 - `Dockerfile`: Multi-stage build for hybrid Go/C++ binary.
 

@@ -146,8 +146,14 @@ func (s *Server) runWorker(id int, wg *sync.WaitGroup) {
 			"batch_size", len(batch.Requests),
 			"expected_compute_ms", calcDelay.Milliseconds())
 
-		// Replace simulated latency with real C++ call
-		if err := engine.ProcessBatch(len(batch.Requests)); err != nil {
+		// 4. Prepare metadata for C++ engine (prompt lengths as compute proxy)
+		promptLengths := make([]int, len(batch.Requests))
+		for i, req := range batch.Requests {
+			promptLengths[i] = len(req.Prompt)
+		}
+
+		// Replace simulated latency with real metadata-aware C++ call
+		if err := engine.ProcessBatch(promptLengths); err != nil {
 			slog.Error("C++ engine error", "worker_id", id, "error", err)
 		}
 

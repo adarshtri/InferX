@@ -18,7 +18,7 @@
 | 14 | Experiments | Tune batch size, workers | Latency vs throughput | Performance insights | ✅ |
 | 15 | C++ Setup | Create simple C++ batch function | Compilation basics | C++ module ready | ✅ |
 | 16 | Integration | Call C++ from Go (cgo) | FFI basics | Go ↔ C++ working | ✅ |
-| 17 | Optimization | Optimize C++ batch processing | Memory layout, avoiding copies | Faster execution | ⬜ |
+| 17 | Optimization | Optimize C++ batch processing | Memory layout, avoiding copies | Faster execution | ✅ |
 | 18 | Backpressure | Add bounded queue, reject overload | Load shedding | Stable under load | ⬜ |
 | 19 | Metrics | Track latency, throughput, queue size | Observability basics | Metrics available | ⬜ |
 | 20 | Profiling | Identify bottlenecks | Performance analysis | Bottleneck insights | ⬜ |
