@@ -78,7 +78,6 @@ func (s *Server) InferHandler(w http.ResponseWriter, r *http.Request) {
 	select {
 	case s.Queue <- req:
 		s.Metrics.AcceptedTotal.Add(1)
-		slog.Info("request successfully queued", "model", req.Model, "depth", len(s.Queue))
 		
 		// Prepare the successful response
 		resp := models.InferenceResponse{

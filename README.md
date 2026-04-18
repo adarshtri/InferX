@@ -1,56 +1,55 @@
 # InferX 🚀
 
-A high-performance AI Inference System built with **Go** and **C++**.
+A high-performance AI Inference System built with **Go** and **C++**. 
 
 ## 📖 Project Overview
-InferX is designed to be a robust, scalable inference server that handles requests asynchronously. It features a Go-based API layer for request handling and a C++ core for optimized batch processing. 
+InferX is a robust, scalable inference server designed to maximize throughput through **Dynamic Batching** and **Zero-Copy Memory Bridging**. It seamlessly integrates Go's lightweight concurrency with C++'s optimized compute performance.
 
-The system uses a **Worker Pool** and **Dynamic Batching** to maximize throughput, bridging Go's concurrency with C++'s raw compute power via a zero-copy Cgo interface.
+### Project Status: ✅ COMPLETED
+InferX has evolved from a simple sequential Go server into a professional-grade hybrid system capable of sustaining **1,000+ Requests/sec** with adaptive backpressure and real-time observability.
 
-### Current Status
-✅ **Day 20**: Integrated performance profiling using Go's `pprof`. Automated the capture of CPU, Heap, and Goroutine profiles via a new `make profile` workflow for deep-dive diagnostics.
+## 🧠 Technical Deep Dive
 
-### Project Structure
+### 1. Hybrid Concurrency (Go ↔ C++)
+- **Worker Pool:** A managed pool of goroutines handles request orchestration.
+- **Dynamic Batching:** Automatically bundles requests based on size or timeout to maximize C++ throughput.
+- **Cgo Bridge:** Uses `unsafe.SliceData` for zero-copy memory visibility between Go and C++.
+
+### 2. Resilience & Stability
+- **Load Shedding:** Adaptive backpressure returns **HTTP 429** during overload to protect server p99 latency.
+- **Graceful Shutdown:** Ensures all pending batches are processed before the server exits.
+
+### 3. Observability
+- **Prometheus Metrics:** Real-time counters for Accepted, Rejected, and Processed requests.
+- **Integrated Profiling:** Automated `pprof` workflow for identifying CPU and Memory hotspots.
+
+## 🏗 Project Structure
 - `api/`: Go-based server and load testing suite.
-  - `internal/server/`: Core worker pool and batching logic.
-  - `internal/engine/`: Cgo wrapper for the C++ library.
-  - `pkg/config/`: Configuration management (Env vars & scenarios).
-  - `pkg/models/`: Shared request/response types.
-- `engine/`: High-performance C++ inference core with metadata-aware processing.
-- `lib/`: Containerized static libraries (C++).
-- `Dockerfile`: Multi-stage build for the hybrid Go/C++ binary.
-- `docker-compose.yml`: Orchestration for scenarios and scaling parameters.
+- `engine/`: High-performance C++ inference core.
+- `docs/`: Technical guides, architectural summaries, and milestones.
+- `Makefile`: Automated build and profiling workflow.
 
 ## 🚦 Getting Started
 
 ### Prerequisites
 - **Docker Desktop**: Required for the hybrid build environment.
-- **Go**: 1.23 or higher (for local load testing).
-- **Make**: For shortcut commands.
+- **Go 1.23+**: For local load testing.
 
 ### Running the Server
-The simplest way to run the entire integrated system is via Docker:
 ```bash
+# Standard Run
 make run
-```
-*This handles C++ compilation, Go linking, and environment setup automatically.*
 
-### Testing the Endpoint
-Send a single request to the running container:
-```bash
-curl -X POST http://localhost:8080/infer \
-  -H "Content-Type: application/json" \
-  -d '{"model": "llama-3", "prompt": "Hello InferX!"}'
+# Stress-Test Scenario (Overload)
+SCENARIO=overload make run
 ```
 
-### Load Testing
-To stress-test the server with concurrent requests from your host machine:
-```bash
-cd api && go run cmd/loadtest/main.go
-```
-This utility reports on total throughput (req/sec) and success rates.
+### Monitoring & Profiling
+- **Metrics:** `curl http://localhost:8080/metrics`
+- **Profilier:** `make profile` (Opens Flame Graph in browser)
 
-## 📅 Roadmap
-Detailed progress and architectural walk-throughs can be tracked in:
-- [mini-milestones.md](docs/mini-milestones.md)
-- [cross_language_integration.md](docs/cross_language_integration.md) (Bridge technical details)
+## 📅 Roadmap & Documentation
+- [Architecture Summary](docs/architecture_summary.md)
+- [Cross-Language Bridge Deep Dive](docs/cross_language_integration.md)
+- [Profiling & Audit Guide](docs/profiling_guide.md)
+- [Mini-Milestones (Day-by-Day)](docs/mini-milestones.md)

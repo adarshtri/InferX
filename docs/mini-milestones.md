@@ -22,7 +22,7 @@
 | 18 | Backpressure | Add bounded queue, reject overload | Load shedding | Stable under load | ✅ |
 | 19 | Metrics | Track latency, throughput, queue size | Observability basics | Metrics available | ✅ |
 | 20 | Profiling | Identify bottlenecks | Performance analysis | Bottleneck insights | ✅ |
-| 21 | Finalize | Clean code, add README, diagram | System design clarity | Portfolio-ready project | ⬜ |
+| 21 | Finalize | Clean code, add README, diagram | System design clarity | Portfolio-ready project | ✅ |
 
 ---
 
